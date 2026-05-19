@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Software League 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Oswald:wght@500;700&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- FontAwesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <!-- Admin Control Bar -->
+    <div class="admin-control-bar" id="adminControlBar" style="display: none;">
+        <div class="admin-bar-container">
+            <div class="admin-bar-active">
+                <span class="status-indicator">
+                    <span class="pulse-dot"></span>
+                    <span class="status-label">MODO ADMIN ACTIVO</span>
+                </span>
+                <span class="divider">|</span>
+                <span class="bar-info"><i class="fa-solid fa-pen-to-square text-yellow"></i> Haz clic y edita goles o nombres directamente en el bracket.</span>
+                <span class="divider">|</span>
+                <div class="bar-actions">
+                    <button class="btn-bar-save" id="adminBarSaveBtn"><i class="fa-solid fa-floppy-disk"></i> Guardar Cambios</button>
+                    <button class="btn-bar-lock" id="adminBarLockBtn"><i class="fa-solid fa-lock"></i> Cerrar Sesión</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Elements -->
+    <div class="bg-elements">
+        <div class="shape shape-1"></div>
+    </div>
+    
+    <!-- Hero Floating Particles Container -->
+    <div class="floating-code-container" id="floatingCodeContainer">
+        <div class="code-snippet snippet-1">&lt;html&gt;<br>&nbsp;&nbsp;&lt;body&gt;</div>
+        <div class="code-snippet snippet-2">for(let i=0; i&lt;teams.length; i++) {<br>&nbsp;&nbsp;playMatch();<br>}</div>
+        <div class="code-snippet snippet-3">const champion = "UNDEFINED";</div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="hero-content">
+            <h2 class="subtitle">Primera edición 2026</h2>
+            <h1 class="title">
+                <span class="text-white">SOFTWARE</span>
+                <span class="text-yellow">LEAGUE</span>
+            </h1>
+            <p class="console-text" id="typewriter"></p>
+            <a href="#fixture" class="btn-primary">Ver Encuentros <i class="fa-solid fa-arrow-down"></i></a>
+        </div>
+    </header>
+
+    <!-- Full Bracket Section -->
+    <section class="fixture-section" id="fixture">
+        <div class="container-fluid" style="max-width: 1500px; margin: 0 auto; padding: 0 20px;">
+            <h2 class="section-title">Torneo Principal <span class="blink">_</span></h2>
+            
+            <!-- Mobile App-Style Tabs -->
+            <div class="mobile-tabs" id="mobileTabs">
+                <button class="m-tab active" data-target="fase1">Fase 1</button>
+                <button class="m-tab" data-target="fase2">Semifinal</button>
+                <button class="m-tab" data-target="final">Gran Final</button>
+            </div>
+
+            <div class="bracket-full show-fase1">
+                
+                <!-- LEFT SIDE (Grupo A) -->
+                <!-- Round 1: 3 Matches -->
+                <div class="bracket-column round-1">
+                    <h3 class="round-title text-group-a">// Grupo A (Cuartos)</h3>
+                    <div class="bracket-match group-a-border">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-connector right"></div>
+                    </div>
+                    <div class="bracket-match group-a-border">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-connector right"></div>
+                    </div>
+                    <div class="bracket-match group-a-border">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-connector right"></div>
+                    </div>
+                </div>
+
+                <!-- Connect Col 1 (Round 1 to Round 2) -->
+                <div class="bracket-column connect-col left-side group-a-color connect-1to2">
+                    <svg>
+                        <path d="M 0 41 H 20 M 0 231 H 20 M 0 421 H 20" class="trace-bg"></path>
+                        <path d="M 0 41 H 20 M 0 231 H 20 M 0 421 H 20" class="trace-flow"></path>
+                    </svg>
+                </div>
+
+                <!-- Round 2: 3 Winner Slots -->
+                <div class="bracket-column round-2">
+                    <h3 class="round-title text-group-a">// Ganadores A</h3>
+                    <div class="bracket-match group-a-border winner-slot">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Ganador M1</span></div>
+                        </div>
+                    </div>
+                    <div class="bracket-match group-a-border winner-slot">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Ganador M2</span></div>
+                        </div>
+                    </div>
+                    <div class="bracket-match group-a-border winner-slot">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Ganador M3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connect Col 2 (Round 2 to Round 3) -->
+                <div class="bracket-column connect-col left-side group-a-color connect-2to3">
+                    <svg>
+                        <path d="M 0 41 H 10 V 211 H 20" class="trace-bg"></path>
+                        <path d="M 0 231 H 10 V 211 H 20" class="trace-bg"></path>
+                        <path d="M 0 231 H 10 V 249 H 20" class="trace-bg"></path>
+                        <path d="M 0 421 H 10 V 249 H 20" class="trace-bg"></path>
+                        
+                        <path d="M 0 41 H 10 V 211 H 20" class="trace-flow"></path>
+                        <path d="M 0 231 H 10 V 211 H 20" class="trace-flow"></path>
+                        <path d="M 0 231 H 10 V 249 H 20" class="trace-flow"></path>
+                        <path d="M 0 421 H 10 V 249 H 20" class="trace-flow"></path>
+                    </svg>
+                </div>
+
+                <!-- Round 3: 1 Match (Final Grupo A) -->
+                <div class="bracket-column round-3">
+                    <h3 class="round-title text-group-a">// Final Grupo A</h3>
+                    <div class="bracket-match group-a-border">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Finalista A1</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Finalista A2</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-connector right"></div>
+                    </div>
+                </div>
+
+                <!-- Connect Col Final -->
+                <div class="bracket-column connect-col final-connect left-side group-a-color final-color">
+                    <svg>
+                        <path d="M 0 231 H 20" class="trace-bg"></path>
+                        <path d="M 0 231 H 20" class="trace-flow"></path>
+                    </svg>
+                </div>
+
+                <!-- CENTER (Gran Final) -->
+                <div class="bracket-column round-final">
+                    <h3 class="round-title text-yellow">/* GRAN FINAL */</h3>
+                    
+                    <div class="bracket-match final-match-node">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty text-yellow"></div><span class="node-team text-yellow">Finalista Grupo A</span></div>
+                            <span class="node-score text-yellow">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty text-yellow"></div><span class="node-team text-yellow">Finalista Grupo B</span></div>
+                            <span class="node-score text-yellow">_</span>
+                        </div>
+                    </div>
+
+                    <!-- Campeón -->
+                    <div class="champion-node">
+                        <i class="fa-solid fa-trophy text-yellow"></i>
+                        <span>return Campeón;</span>
+                    </div>
+                </div>
+
+                <!-- RIGHT SIDE (Grupo B) -->
+                <!-- Connect Col Final -->
+                <div class="bracket-column connect-col final-connect right-side group-b-color final-color">
+                    <svg>
+                        <path d="M 20 231 H 0" class="trace-bg"></path>
+                        <path d="M 20 231 H 0" class="trace-flow"></path>
+                    </svg>
+                </div>
+
+                <!-- Round 3: 1 Match (Final Grupo B) -->
+                <div class="bracket-column round-3">
+                    <h3 class="round-title text-group-b">// Final Grupo B</h3>
+                    <div class="bracket-match group-b-border">
+                        <div class="bracket-connector left"></div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Finalista B1</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Finalista B2</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connect Col 2 (Round 2 to Round 3) -->
+                <div class="bracket-column connect-col right-side group-b-color connect-2to3">
+                    <svg>
+                        <path d="M 20 41 H 10 V 211 H 0" class="trace-bg"></path>
+                        <path d="M 20 231 H 10 V 211 H 0" class="trace-bg"></path>
+                        <path d="M 20 231 H 10 V 249 H 0" class="trace-bg"></path>
+                        <path d="M 20 421 H 10 V 249 H 0" class="trace-bg"></path>
+                        
+                        <path d="M 20 41 H 10 V 211 H 0" class="trace-flow"></path>
+                        <path d="M 20 231 H 10 V 211 H 0" class="trace-flow"></path>
+                        <path d="M 20 231 H 10 V 249 H 0" class="trace-flow"></path>
+                        <path d="M 20 421 H 10 V 249 H 0" class="trace-flow"></path>
+                    </svg>
+                </div>
+
+                <!-- Round 2: 3 Winner Slots -->
+                <div class="bracket-column round-2">
+                    <h3 class="round-title text-group-b">// Ganadores B</h3>
+                    <div class="bracket-match group-b-border winner-slot">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Ganador M1</span></div>
+                        </div>
+                    </div>
+                    <div class="bracket-match group-b-border winner-slot">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Ganador M2</span></div>
+                        </div>
+                    </div>
+                    <div class="bracket-match group-b-border winner-slot">
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo empty"></div><span class="node-team">Ganador M3</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Connect Col 1 (Round 1 to Round 2) -->
+                <div class="bracket-column connect-col right-side group-b-color connect-1to2">
+                    <svg>
+                        <path d="M 20 41 H 0 M 20 231 H 0 M 20 421 H 0" class="trace-bg"></path>
+                        <path d="M 20 41 H 0 M 20 231 H 0 M 20 421 H 0" class="trace-flow"></path>
+                    </svg>
+                </div>
+
+                <!-- Round 1: 3 Matches -->
+                <div class="bracket-column round-1">
+                    <h3 class="round-title text-group-b">// Grupo B (Cuartos)</h3>
+                    <div class="bracket-match group-b-border">
+                        <div class="bracket-connector left"></div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                    </div>
+                    <div class="bracket-match group-b-border">
+                        <div class="bracket-connector left"></div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                    </div>
+                    <div class="bracket-match group-b-border">
+                        <div class="bracket-connector left"></div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                        <div class="bracket-node">
+                            <div class="team-info"><div class="team-photo"><i class="fa-solid fa-code"></i></div><span class="node-team">Por definir</span></div>
+                            <span class="node-score">_</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+    <footer>
+        <div class="container footer-simple">
+            <span class="footer-code">&lt;Software League /&gt; © 2026</span>
+            <span class="footer-divider">|</span>
+            <span class="footer-author">Developed by <span class="text-yellow">xleao</span></span>
+            <span class="footer-divider">|</span>
+            <span class="footer-admin" id="footerAdminContainer">
+                <span class="footer-admin-link" id="footerAdminLink" style="cursor:pointer;"><i class="fa-solid fa-lock"></i> Admin Access</span>
+                <span class="footer-admin-prompt" id="footerAdminPrompt" style="display: none;">
+                    <input type="password" id="footerAdminPassword" placeholder="Clave...">
+                    <button id="footerAdminUnlockBtn">OK</button>
+                    <span id="footerAdminError" class="footer-admin-error"></span>
+                </span>
+            </span>
+        </div>
+    </footer>
+    <!-- Secret Riddle Cyber-Card -->
+    <div id="riddleCard" class="riddle-card">
+        <div class="riddle-header">
+            <span><i class="fa-solid fa-terminal text-yellow"></i> ACERTIJO HACKER DETECTADO</span>
+            <span class="riddle-close" id="riddleCloseBtn">&times;</span>
+        </div>
+        <div class="riddle-text" id="riddleText">Cargando acertijo...</div>
+        <div class="riddle-input-container">
+            <input type="text" id="riddleInput" class="riddle-input" placeholder="Escribe tu respuesta...">
+            <button id="riddleSubmitBtn" class="riddle-btn">Validar</button>
+        </div>
+        <div id="riddleFeedback" class="riddle-feedback"></div>
+    </div>
+
+    <!-- Supabase Client JS SDK CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="script.js"></script>
+</body>
+</html>

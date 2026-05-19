@@ -1,0 +1,13 @@
+# Ignorar variables de entorno (Contiene contraseñas sensibles)
+.env
+
+# Ignorar archivos locales de VSCode
+.vscode/
+
+# Ignorar archivos de logs o temporales
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+Thumbs.db
