@@ -279,7 +279,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Initialize vote system for all nodes with the loaded values
             document.querySelectorAll('.bracket-node').forEach(node => {
-                initVoteSystem(node, nodeMap);
+                initVoteSystem(node, nodeMap, nodes);
             });
             
             // Highlight connector lines
@@ -730,9 +730,33 @@ function getNodeUniqueId(node) {
     return `node_${colIndex}_${matchIndex}_${nodeIndex}`;
 }
 
+function getTeamPrimaryNodeIdFromDb(teamName, nodes) {
+    if (!teamName || !nodes) return null;
+    const cleanName = teamName.replace(/[\{\}]/g, '').replace(/\s+/g, ' ').trim();
+    if (cleanName === 'Por definir' || cleanName === '_' || cleanName === '' || cleanName.startsWith('Ganador M') || cleanName.startsWith('Finalista ') || cleanName.startsWith('Ganador [')) {
+        return null;
+    }
+    
+    // Scan nodes array to find the lexicographically smallest round-1 node for this team name
+    let bestNodeId = null;
+    nodes.forEach(n => {
+        if (n.nombre_equipo && n.id_nodo) {
+            const compareName = n.nombre_equipo.replace(/[\{\}]/g, '').replace(/\s+/g, ' ').trim();
+            if (compareName === cleanName) {
+                if (n.id_nodo.startsWith('node_0_')) {
+                    if (bestNodeId === null || n.id_nodo < bestNodeId) {
+                        bestNodeId = n.id_nodo;
+                    }
+                }
+            }
+        }
+    });
+    return bestNodeId;
+}
+
 function getTeamPrimaryNodeId(teamName) {
     if (!teamName) return null;
-    const cleanName = teamName.replace(/[\{\}]/g, '').trim();
+    const cleanName = teamName.replace(/[\{\}]/g, '').replace(/\s+/g, ' ').trim();
     if (cleanName === 'Por definir' || cleanName === '_' || cleanName === '' || cleanName.startsWith('Ganador M') || cleanName.startsWith('Finalista ') || cleanName.startsWith('Ganador [')) {
         return null;
     }
@@ -743,16 +767,19 @@ function getTeamPrimaryNodeId(teamName) {
         const nodes = col.querySelectorAll('.bracket-node');
         for (let node of nodes) {
             const teamEl = node.querySelector('.node-team');
-            if (teamEl && teamEl.textContent.replace(/[\{\}]/g, '').trim() === cleanName) {
-                foundNodeId = getNodeUniqueId(node);
-                if (foundNodeId) return foundNodeId;
+            if (teamEl) {
+                const compareName = teamEl.textContent.replace(/[\{\}]/g, '').replace(/\s+/g, ' ').trim();
+                if (compareName === cleanName) {
+                    foundNodeId = getNodeUniqueId(node);
+                    if (foundNodeId) return foundNodeId;
+                }
             }
         }
     }
     return null;
 }
 
-function initVoteSystem(node, nodeMap = null) {
+function initVoteSystem(node, nodeMap = null, nodesList = null) {
     const teamNameEl = node.querySelector('.node-team');
     if (!teamNameEl) return;
     
@@ -770,8 +797,8 @@ function initVoteSystem(node, nodeMap = null) {
     const localNodeId = getNodeUniqueId(node);
     if (!localNodeId) return;
     
-    // Resolve the primary starting node ID for this team to group all match votes globally!
-    const nodeId = getTeamPrimaryNodeId(teamName) || localNodeId;
+    // Each match node acts as an independent voting opportunity!
+    const nodeId = localNodeId;
     
     const userVotedKey = nodeId + '_user_voted_v2';
     
