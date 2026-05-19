@@ -73,3 +73,19 @@ BEGIN
     RETURN v_hash = crypt(p_password, v_hash);
 END;
 $$;
+
+
+-- ==========================================
+-- REALTIME SUBSCRIPTIONS
+-- ==========================================
+
+-- Habilitar la transmisión en tiempo real para las tablas clave
+ALTER TABLE public.nodos_bracket REPLICA IDENTITY FULL;
+ALTER TABLE public.registro_votos REPLICA IDENTITY FULL;
+
+-- Agregar tablas a la publicación de Supabase Realtime
+BEGIN;
+  DROP PUBLICATION IF EXISTS supabase_realtime;
+  CREATE PUBLICATION supabase_realtime FOR TABLE public.nodos_bracket, public.registro_votos;
+COMMIT;
+

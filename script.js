@@ -205,6 +205,43 @@ document.addEventListener('DOMContentLoaded', () => {
     // Load and Synchronize all Bracket Data from Supabase
     async function loadBracketData() {
         try {
+            // Get user public IP securely at startup to load their active votes from DB
+            let userIp = 'unknown_client';
+            try {
+                const ipRes = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipRes.json();
+                userIp = ipData.ip;
+            } catch (ipErr) {
+                // Fallback: device-specific local UUID for ad-blockers
+                let clientUuid = localStorage.getItem('software_league_client_uuid');
+                if (!clientUuid) {
+                    clientUuid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+                    localStorage.setItem('software_league_client_uuid', clientUuid);
+                }
+                userIp = 'fallback_' + clientUuid;
+            }
+
+            // Fetch active votes for this IP from database
+            const { data: userVotes, error: votesError } = await supabaseClient
+                .from('registro_votos')
+                .select('id_nodo')
+                .eq('ip_usuario', userIp);
+
+            // Clean active votes local storage states
+            document.querySelectorAll('.bracket-node').forEach(node => {
+                const nodeId = getNodeUniqueId(node);
+                if (nodeId) {
+                    localStorage.setItem(nodeId + '_user_voted_v2', 'false');
+                }
+            });
+
+            // Mark active votes from database in local storage
+            if (!votesError && userVotes) {
+                userVotes.forEach(vote => {
+                    localStorage.setItem(vote.id_nodo + '_user_voted_v2', 'true');
+                });
+            }
+
             // Fetch all bracket nodes from Supabase
             const { data: nodes, error } = await supabaseClient
                 .from('nodos_bracket')
@@ -266,6 +303,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
             }
+            
+            // Render Real-time Votaciones Leaderboard
+            renderLeaderboard(nodeMap);
         } catch (err) {
             console.error('Error al cargar datos de Supabase:', err);
             // Fallback: load at least an empty vote system so hearts aren't broken if offline
@@ -273,7 +313,133 @@ document.addEventListener('DOMContentLoaded', () => {
                 initVoteSystem(node);
             });
             refreshBracketClassification();
+            
+            // Render fallback empty leaderboard
+            renderLeaderboard(null);
         }
+    }
+    
+    // Render and manage the dynamic competitive coding leaderboard
+    function renderLeaderboard(nodeMap) {
+        const tbody = document.getElementById('leaderboardBody');
+        if (!tbody) return;
+        
+        // Scan starting nodes (round-1)
+        const teams = [];
+        const seenTeams = new Set();
+        
+        document.querySelectorAll('.bracket-column.round-1 .bracket-node').forEach(node => {
+            const nodeId = getNodeUniqueId(node);
+            const teamEl = node.querySelector('.node-team');
+            if (!nodeId || !teamEl) return;
+            
+            const rawTeamName = teamEl.textContent.trim();
+            // Filter placeholders
+            if (rawTeamName === 'Por definir' || rawTeamName === '_' || rawTeamName === '' || rawTeamName.startsWith('Ganador M') || rawTeamName.startsWith('Finalista ') || rawTeamName.startsWith('Ganador [')) {
+                return;
+            }
+            
+            // Sum hearts across all matches this team appears in to keep the battle of core absolutely real!
+            let totalHearts = 0;
+            // Let's sum corazones from the nodeMap for all nodes holding this team
+            if (nodeMap) {
+                Object.values(nodeMap).forEach(n => {
+                    if (n.nombre_equipo && n.nombre_equipo.trim() === rawTeamName) {
+                        totalHearts += parseInt(n.corazones) || 0;
+                    }
+                });
+            }
+            
+            // To ensure unique entries in the leaderboard
+            if (!seenTeams.has(rawTeamName)) {
+                seenTeams.add(rawTeamName);
+                teams.push({
+                    nodeId: nodeId, // First round node to bind the click event
+                    teamName: rawTeamName,
+                    hearts: totalHearts
+                });
+            }
+        });
+        
+        // Sort teams by total hearts accumulated descending
+        teams.sort((a, b) => b.hearts - a.hearts);
+        
+        // Render rows
+        if (teams.length === 0) {
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center text-muted" style="padding: 30px;">
+                        // No hay equipos registrados en competencia actualmente.
+                    </td>
+                </tr>
+            `;
+            return;
+        }
+        
+        tbody.innerHTML = '';
+        
+        teams.forEach((t, index) => {
+            const rank = index + 1;
+            let rankHtml = '';
+            let rowClass = '';
+            
+            if (rank === 1) {
+                rankHtml = `<div class="rank-badge rank-1"><i class="fa-solid fa-trophy"></i></div>`;
+                rowClass = 'tr-rank-1';
+            } else if (rank === 2) {
+                rankHtml = `<div class="rank-badge rank-2">2</div>`;
+            } else if (rank === 3) {
+                rankHtml = `<div class="rank-badge rank-3">3</div>`;
+            } else {
+                rankHtml = `<div class="rank-badge rank-other">${rank}</div>`;
+            }
+            
+            const userVotedKey = t.nodeId + '_user_voted_v2';
+            const isVoted = localStorage.getItem(userVotedKey) === 'true';
+            
+            const tr = document.createElement('tr');
+            if (rowClass) tr.className = rowClass;
+            
+            tr.innerHTML = `
+                <td class="col-rank">${rankHtml}</td>
+                <td class="col-team">// ${t.teamName}</td>
+                <td class="col-hearts"><i class="fa-solid fa-heart text-yellow" style="margin-right: 5px;"></i> ${t.hearts}</td>
+                <td class="col-action">
+                    <button class="table-vote-btn ${isVoted ? 'voted' : ''}" data-node-id="${t.nodeId}">
+                        <i class="${isVoted ? 'fa-solid' : 'fa-regular'} fa-heart"></i> ${isVoted ? 'Votado' : 'Votar'}
+                    </button>
+                </td>
+            `;
+            
+            // Attach vote action click listener
+            const voteBtn = tr.querySelector('.table-vote-btn');
+            voteBtn.addEventListener('click', async (e) => {
+                e.stopPropagation();
+                
+                // Find matching vote button inside bracket node in col 0
+                let bracketNode = null;
+                document.querySelectorAll('.bracket-node').forEach(bn => {
+                    if (getNodeUniqueId(bn) === t.nodeId) {
+                        bracketNode = bn;
+                    }
+                });
+                
+                if (bracketNode) {
+                    const originalVoteBtn = bracketNode.querySelector('.vote-btn');
+                    if (originalVoteBtn) {
+                        // Click original button to trigger standard, secure IP validation + heart visual fx!
+                        originalVoteBtn.click();
+                        
+                        // Wait a brief moment for Supabase to resolve and then refresh the leaderboard
+                        setTimeout(async () => {
+                            await loadBracketData();
+                        }, 1200);
+                    }
+                }
+            });
+            
+            tbody.appendChild(tr);
+        });
     }
     
     // Call load on startup
@@ -478,10 +644,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 // Reload and refresh
                 await loadBracketData();
-                alert('¡Bracket de la Software League guardado y sincronizado con éxito en Supabase!');
+                showCustomModal('¡Bracket de la Software League guardado y sincronizado con éxito en Supabase!', 'success');
             } catch (err) {
                 console.error('Error al guardar datos:', err);
-                alert('Hubo un error al guardar los datos en la base de datos: ' + err.message);
+                showCustomModal('Hubo un error al guardar los datos en la base de datos: ' + err.message, 'error');
             }
         });
     }
@@ -564,6 +730,28 @@ function getNodeUniqueId(node) {
     return `node_${colIndex}_${matchIndex}_${nodeIndex}`;
 }
 
+function getTeamPrimaryNodeId(teamName) {
+    if (!teamName) return null;
+    const cleanName = teamName.replace(/[\{\}]/g, '').trim();
+    if (cleanName === 'Por definir' || cleanName === '_' || cleanName === '' || cleanName.startsWith('Ganador M') || cleanName.startsWith('Finalista ') || cleanName.startsWith('Ganador [')) {
+        return null;
+    }
+    
+    let foundNodeId = null;
+    const round1Columns = document.querySelectorAll('.bracket-column.round-1');
+    for (let col of round1Columns) {
+        const nodes = col.querySelectorAll('.bracket-node');
+        for (let node of nodes) {
+            const teamEl = node.querySelector('.node-team');
+            if (teamEl && teamEl.textContent.replace(/[\{\}]/g, '').trim() === cleanName) {
+                foundNodeId = getNodeUniqueId(node);
+                if (foundNodeId) return foundNodeId;
+            }
+        }
+    }
+    return null;
+}
+
 function initVoteSystem(node, nodeMap = null) {
     const teamNameEl = node.querySelector('.node-team');
     if (!teamNameEl) return;
@@ -579,8 +767,11 @@ function initVoteSystem(node, nodeMap = null) {
         return;
     }
     
-    const nodeId = getNodeUniqueId(node);
-    if (!nodeId) return;
+    const localNodeId = getNodeUniqueId(node);
+    if (!localNodeId) return;
+    
+    // Resolve the primary starting node ID for this team to group all match votes globally!
+    const nodeId = getTeamPrimaryNodeId(teamName) || localNodeId;
     
     const userVotedKey = nodeId + '_user_voted_v2';
     
@@ -655,7 +846,7 @@ function initVoteSystem(node, nodeMap = null) {
                 
                 if (regError) {
                     if (regError.code === '23505') {
-                        alert('¡Ya registraste tu voto por este equipo en este partido!');
+                        showCustomModal('¡Ya registraste tu voto por este equipo en este partido!', 'error');
                     } else {
                         throw regError;
                     }
@@ -716,7 +907,7 @@ function initVoteSystem(node, nodeMap = null) {
             }
         } catch (err) {
             console.error('Error al procesar voto:', err);
-            alert('No se pudo procesar tu voto. Por favor, inténtalo de nuevo.');
+            showCustomModal('No se pudo procesar tu voto. Por favor, inténtalo de nuevo.', 'error');
         } finally {
             voteBtn.disabled = false;
         }
@@ -890,3 +1081,106 @@ function openRiddleCard(index) {
     card.classList.add('active');
     input.focus();
 }
+
+// Premium Custom Modal Dialog (Cyberpunk Glassmorphism style)
+function showCustomModal(message, type = 'info') {
+    // Remove existing modal if any
+    const existingModal = document.querySelector('.cyber-modal-overlay');
+    if (existingModal) existingModal.remove();
+
+    // Create modal elements
+    const overlay = document.createElement('div');
+    overlay.className = 'cyber-modal-overlay';
+    
+    let iconClass = 'fa-circle-info';
+    let titleText = 'Notificación';
+    
+    if (type === 'success') {
+        iconClass = 'fa-circle-check';
+        titleText = 'Completado';
+    } else if (type === 'error') {
+        iconClass = 'fa-circle-xmark';
+        titleText = 'Error';
+    }
+    
+    overlay.innerHTML = `
+        <div class="cyber-modal-card ${type}">
+            <div class="cyber-modal-icon"><i class="fa-solid ${iconClass}"></i></div>
+            <div class="cyber-modal-title">${titleText}</div>
+            <div class="cyber-modal-text">${message}</div>
+            <button class="cyber-modal-btn">Aceptar</button>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Trigger animations in next paint frame
+    requestAnimationFrame(() => {
+        overlay.classList.add('active');
+    });
+    
+    // Close modal function
+    const closeModal = () => {
+        overlay.classList.remove('active');
+        // Remove from DOM after transition completes
+        setTimeout(() => {
+            overlay.remove();
+        }, 300);
+    };
+    
+    // Attach event listeners
+    const closeBtn = overlay.querySelector('.cyber-modal-btn');
+    if (closeBtn) {
+        closeBtn.focus();
+        closeBtn.addEventListener('click', closeModal);
+    }
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeModal();
+    });
+    
+    // Close on Enter or Escape key press
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' || e.key === 'Escape') {
+            closeModal();
+            document.removeEventListener('keydown', handleKeyPress);
+        }
+    };
+    document.addEventListener('keydown', handleKeyPress);
+}
+
+
+// ==========================================================================
+// SUPABASE REALTIME (WEBHOOKS / WEBSOCKETS EN VIVO)
+// ==========================================================================
+function subscribeToRealtimeChanges() {
+    console.log('🔌 Conectando con Supabase Realtime para actualizaciones en vivo...');
+    
+    supabaseClient
+        .channel('software-league-realtime')
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'nodos_bracket' },
+            (payload) => {
+                console.log('⚡ Cambio en nodos_bracket recibido en vivo:', payload);
+                loadBracketData();
+            }
+        )
+        .on(
+            'postgres_changes',
+            { event: '*', schema: 'public', table: 'registro_votos' },
+            (payload) => {
+                console.log('⚡ Cambio en registro_votos recibido en vivo:', payload);
+                loadBracketData();
+            }
+        )
+        .subscribe((status) => {
+            if (status === 'SUBSCRIBED') {
+                console.log('🟢 ¡Suscrito con éxito a Supabase Realtime! Tabla en vivo activada.');
+            }
+        });
+}
+
+// Iniciar suscripción en tiempo real
+subscribeToRealtimeChanges();
+
+

@@ -822,11 +822,11 @@ footer {
     }
     
     .title {
-        font-size: 3.2rem;
+        font-size: 3.6rem;
     }
 
     .subtitle {
-        font-size: 1.1rem;
+        font-size: 1.4rem;
         letter-spacing: 2px;
     }
     
@@ -835,7 +835,7 @@ footer {
     }
     
     .console-text {
-        font-size: 1rem;
+        font-size: 1.2rem;
         min-height: 40px;
     }
     
@@ -887,11 +887,11 @@ footer {
 
 @media (max-width: 480px) {
     .title {
-        font-size: 2.5rem;
+        font-size: 3.0rem;
     }
     
     .subtitle {
-        font-size: 0.9rem;
+        font-size: 1.25rem;
     }
     
     .section-title {
@@ -899,7 +899,7 @@ footer {
     }
     
     .console-text {
-        font-size: 0.85rem;
+        font-size: 1.05rem;
     }
     
     /* Bracket on very small screens: force horizontal scroll explicitly */
@@ -1475,3 +1475,341 @@ body.admin-mode-enabled .admin-clear-btn { display: block; }
     color: #ff4757;
     text-shadow: 0 0 8px rgba(255, 71, 87, 0.3);
 }
+
+/* Custom Cyber Modal (Premium Glassmorphic Dialog) */
+.cyber-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(2, 8, 19, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.cyber-modal-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.cyber-modal-card {
+    background: linear-gradient(135deg, rgba(5, 16, 36, 0.8), rgba(2, 8, 19, 0.95));
+    border: 1px solid rgba(46, 179, 217, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 0 30px rgba(46, 179, 217, 0.15), inset 0 0 15px rgba(255, 255, 255, 0.02);
+    width: 90%;
+    max-width: 420px;
+    padding: 30px;
+    text-align: center;
+    transform: scale(0.85) translateY(20px);
+    transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    color: var(--text-main);
+    position: relative;
+    overflow: hidden;
+}
+
+.cyber-modal-overlay.active .cyber-modal-card {
+    transform: scale(1) translateY(0);
+}
+
+/* Modal Types Colors */
+.cyber-modal-card.success {
+    border-color: rgba(46, 213, 115, 0.4);
+    box-shadow: 0 0 35px rgba(46, 213, 115, 0.2);
+}
+
+.cyber-modal-card.error {
+    border-color: rgba(255, 71, 87, 0.4);
+    box-shadow: 0 0 35px rgba(255, 71, 87, 0.2);
+}
+
+/* Header & Icons */
+.cyber-modal-icon {
+    font-size: 2.5rem;
+    color: var(--group-a-color);
+    margin-bottom: 15px;
+    text-shadow: 0 0 10px rgba(46, 179, 217, 0.4);
+}
+
+.cyber-modal-card.success .cyber-modal-icon {
+    color: #2ed573;
+    text-shadow: 0 0 10px rgba(46, 213, 115, 0.4);
+}
+
+.cyber-modal-card.error .cyber-modal-icon {
+    color: #ff4757;
+    text-shadow: 0 0 10px rgba(255, 71, 87, 0.4);
+}
+
+.cyber-modal-title {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+}
+
+.cyber-modal-card.success .cyber-modal-title {
+    color: #2ed573;
+}
+
+.cyber-modal-card.error .cyber-modal-title {
+    color: #ff4757;
+}
+
+.cyber-modal-text {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+/* Cyber Button */
+.cyber-modal-btn {
+    background: linear-gradient(90deg, var(--group-a-color), #2099bd);
+    border: none;
+    border-radius: 8px;
+    color: #020813;
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: bold;
+    letter-spacing: 1px;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.2s, box-shadow 0.2s;
+    text-transform: uppercase;
+    outline: none;
+}
+
+.cyber-modal-btn:hover {
+    background: linear-gradient(90deg, #55cbf0, var(--group-a-color));
+    box-shadow: 0 0 15px rgba(46, 179, 217, 0.4);
+    transform: translateY(-2px);
+}
+
+.cyber-modal-btn:active {
+    transform: translateY(0);
+}
+
+.cyber-modal-card.success .cyber-modal-btn {
+    background: linear-gradient(90deg, #2ed573, #26af5e);
+}
+.cyber-modal-card.success .cyber-modal-btn:hover {
+    background: linear-gradient(90deg, #51e08f, #2ed573);
+    box-shadow: 0 0 15px rgba(46, 213, 115, 0.4);
+}
+
+.cyber-modal-card.error .cyber-modal-btn {
+    background: linear-gradient(90deg, #ff4757, #d83c4a);
+}
+.cyber-modal-card.error .cyber-modal-btn:hover {
+    background: linear-gradient(90deg, #ff6b81, #ff4757);
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+}
+
+/* ==========================================================================
+   VOTACIONES / LEADERBOARD (BATTLE OF CORE)
+   ========================================================================== */
+.leaderboard-section {
+    background: radial-gradient(circle at bottom, rgba(46, 179, 217, 0.05) 0%, var(--bg-darker) 100%);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    position: relative;
+}
+
+.leaderboard-subtitle {
+    font-family: var(--font-code);
+    color: var(--group-a-color);
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-align: center;
+    margin-top: -15px;
+    margin-bottom: 35px;
+    text-shadow: 0 0 8px rgba(46, 179, 217, 0.3);
+}
+
+.leaderboard-container {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.01);
+    overflow: hidden;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.leaderboard-container:hover {
+    border-color: rgba(46, 179, 217, 0.25);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5), 0 0 25px rgba(46, 179, 217, 0.05), inset 0 0 20px rgba(255, 255, 255, 0.01);
+}
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+}
+
+.leaderboard-table th {
+    font-family: var(--font-heading);
+    font-size: 1.1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    background: rgba(2, 8, 19, 0.4);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 18px 24px;
+    text-align: left;
+}
+
+.leaderboard-table td {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    color: var(--text-main);
+    vertical-align: middle;
+    transition: background-color 0.2s ease;
+}
+
+.leaderboard-table tr {
+    transition: background 0.2s;
+}
+
+.leaderboard-table tr:hover td {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.leaderboard-table tr:last-child td {
+    border-bottom: none;
+}
+
+/* Table Columns sizing */
+.col-rank { width: 12%; text-align: center !important; }
+.leaderboard-table th.col-rank { text-align: center; }
+.col-team { width: 48%; font-weight: 600; font-size: 1.05rem; }
+.col-hearts { width: 22%; font-family: var(--font-code); color: var(--accent-yellow); font-size: 1.1rem; }
+.col-action { width: 18%; text-align: center; }
+
+/* Ranking Badges */
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    font-family: var(--font-heading);
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.rank-1 {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    color: #020813;
+    box-shadow: 0 0 12px rgba(241, 196, 15, 0.5);
+}
+
+.rank-2 {
+    background: linear-gradient(135deg, #bdc3c7, #95a5a6);
+    color: #020813;
+    box-shadow: 0 0 10px rgba(189, 195, 199, 0.4);
+}
+
+.rank-3 {
+    background: linear-gradient(135deg, #e67e22, #d35400);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(230, 126, 34, 0.4);
+}
+
+.rank-other {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--text-muted);
+}
+
+/* Competitive Votación Button inside Table Row */
+.table-vote-btn {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 30px;
+    color: rgba(255, 255, 255, 0.5);
+    font-family: var(--font-heading);
+    font-size: 0.85rem;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    transition: all 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    outline: none;
+}
+
+.table-vote-btn i {
+    font-size: 0.95rem;
+    transition: transform 0.2s;
+}
+
+.table-vote-btn:hover {
+    background: rgba(255, 71, 87, 0.12);
+    border-color: rgba(255, 71, 87, 0.4);
+    color: #ff4757;
+    box-shadow: 0 0 12px rgba(255, 71, 87, 0.25);
+    transform: translateY(-2px);
+}
+
+.table-vote-btn:hover i {
+    transform: scale(1.2);
+}
+
+.table-vote-btn.voted {
+    background: linear-gradient(90deg, #ff4757, #ff6b81);
+    border-color: #ff4757;
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.4);
+}
+
+.table-vote-btn.voted i {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.6));
+    animation: heartbeat 0.35s ease-out;
+}
+
+/* Competitive Fire highlight on high ranked teams */
+.tr-rank-1 td.col-team {
+    color: #f1c40f;
+    text-shadow: 0 0 8px rgba(241, 196, 15, 0.2);
+}
+
+.tr-rank-1 td.col-hearts {
+    color: #f1c40f;
+    font-weight: bold;
+    text-shadow: 0 0 8px rgba(241, 196, 15, 0.3);
+}
+
+/* Responsive Table */
+@media (max-width: 576px) {
+    .leaderboard-table th, .leaderboard-table td {
+        padding: 12px 14px;
+    }
+    .col-rank { width: 15%; }
+    .col-team { width: 40%; font-size: 0.9rem; }
+    .col-hearts { width: 20%; font-size: 0.95rem; }
+    .col-action { width: 25%; }
+    .table-vote-btn {
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+}
+
+
